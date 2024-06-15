@@ -4,6 +4,7 @@ let currentRamen = 1;
 // Callbacks
 const handleClick = (ramen) => {
   // Add code
+  //find elements and add ramen info to DOM
   let displayCard = document.getElementById("ramen-detail");
   let ramenImg = displayCard.getElementsByClassName("detail-image");
   let ramenName = displayCard.getElementsByClassName("name");
@@ -18,6 +19,7 @@ const handleClick = (ramen) => {
   ramenRating.textContent = `${ramen.rating}`;
   ramenComment.textContent = `${ramen.comment}`;
 
+  //sets current ramen for use when deleting from DOM
   currentRamen = ramen.id;
 };
 
@@ -37,6 +39,8 @@ const addSubmitListener = () => {
 function deleteRamen(ramenId){
   //console.log("click")
   //ramen.parentNode.remove();
+
+  //delete ramen from db.json
   fetch(`http://localhost:3000/ramens/${ramenId}`,{
     method:'DELETE',
     headers: {
@@ -46,6 +50,7 @@ function deleteRamen(ramenId){
 }  
 
 const buildRamen = (newRamen) => {
+  //create object with new ramen info
   let ramenObj = {
     id: ramenCounter,
     name: `${newRamen.name.value}`,
@@ -54,7 +59,7 @@ const buildRamen = (newRamen) => {
     rating: newRamen.rating.value,
     comment: `${newRamen.comment.value}`
   };
-  
+  //add new ramen object to DOM
   renderRamen(ramenObj);
   
 
@@ -69,6 +74,8 @@ const displayRamens = () => {
 
 };
 function renderRamen(ramen){
+
+  //create a div the ramen
   let card = document.createElement("div");
   card.className = "card";
   card.innerHTML = `
@@ -79,16 +86,21 @@ function renderRamen(ramen){
       <button type="button" id="del${ramen.id}">Delete</button>
     </div>
   `;
-
+  //append ramen div to DOM
   document.getElementById("ramen-menu").appendChild(card);
+
+  //add click functionality
   document.getElementById(`${ramen.id}`).addEventListener("click", () =>  handleClick(ramen));
   document.getElementById(`del${ramen.id}`).addEventListener("click", () =>  {
     //card.remove();
     deleteRamen(`${ramen.id}`)
+    //check if displayed ramen is the one being deleted and remove it from DOM
     if(ramen.id === currentRamen){
       clearRamen();
     }
   });
+
+  //display first ramen by default
   if(ramenCounter === 1){
     handleClick(ramen);
   }
@@ -97,7 +109,7 @@ function renderRamen(ramen){
 
 function clearRamen(){
 
-    // Add code
+    // remove deleted ramen from the display in DOM
     let displayCard = document.getElementById("ramen-detail");
     let ramenImg = displayCard.getElementsByClassName("detail-image");
     let ramenName = displayCard.getElementsByClassName("name");
