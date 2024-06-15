@@ -1,6 +1,6 @@
 // index.js
-const ramenHolder = {};
 let ramenCounter = 1;
+let currentRamen = 1;
 // Callbacks
 const handleClick = (ramen) => {
   // Add code
@@ -18,6 +18,7 @@ const handleClick = (ramen) => {
   ramenRating.textContent = `${ramen.rating}`;
   ramenComment.textContent = `${ramen.comment}`;
 
+  currentRamen = ramen.id;
 };
 
 const addSubmitListener = () => {
@@ -32,6 +33,17 @@ const addSubmitListener = () => {
     
 
 }
+
+function deleteRamen(ramenId){
+  //console.log("click")
+  //ramen.parentNode.remove();
+  fetch(`http://localhost:3000/ramens/${ramenId}`,{
+    method:'DELETE',
+    headers: {
+      'Content-Type':'application/json'
+    }
+  })
+}  
 
 const buildRamen = (newRamen) => {
   let ramenObj = {
@@ -60,19 +72,46 @@ function renderRamen(ramen){
   let card = document.createElement("div");
   card.className = "card";
   card.innerHTML = `
-    <img id="${ramen.id}" src="${ramen.image}" class="ramenImg" /> 
+    <div>
+      <img id="${ramen.id}" src="${ramen.image}" class="ramenImg" /> 
+    </div>
+    <div>
+      <button type="button" id="del${ramen.id}">Delete</button>
+    </div>
   `;
-  ramenHolder[`${ramen.id}`] = {
-    name: `${ramen.name}`,
-    image: `${ramen.image}`,
-    rating: ramen.rating,
-    comment: `${ramen.comment}`
-    
-  };
-  
+
   document.getElementById("ramen-menu").appendChild(card);
   document.getElementById(`${ramen.id}`).addEventListener("click", () =>  handleClick(ramen));
+  document.getElementById(`del${ramen.id}`).addEventListener("click", () =>  {
+    //card.remove();
+    deleteRamen(`${ramen.id}`)
+    if(ramen.id === currentRamen){
+      clearRamen();
+    }
+  });
+  if(ramenCounter === 1){
+    handleClick(ramen);
+  }
   ramenCounter += 1;
+}
+
+function clearRamen(){
+
+    // Add code
+    let displayCard = document.getElementById("ramen-detail");
+    let ramenImg = displayCard.getElementsByClassName("detail-image");
+    let ramenName = displayCard.getElementsByClassName("name");
+    let ramenRestaurant = displayCard.getElementsByClassName("restaurant");
+  
+    ramenImg[0].src = ``;
+    ramenName[0].textContent = ``;
+    ramenRestaurant[0].textContent = ``
+  
+    let ramenRating = document.getElementById("rating-display");
+    let ramenComment = document.getElementById("comment-display");
+    ramenRating.textContent = ``;
+    ramenComment.textContent = ``;
+
 }
 
 const main = () => {
